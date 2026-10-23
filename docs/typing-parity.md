@@ -130,7 +130,10 @@ Applied when a word is finished by a space, punctuation **or Enter** (`enter_fin
   language, as for the replacement list, #735): smart quotes are „…“ and ‚…‘, in Swiss and
   Liechtenstein German «…» and ‹…›; a single quote after a letter or digit is the apostrophe ’
   (`geht’s`) unless it closes an open ‚. German abbreviations (`z.B.`, `bzw.`, `vgl.`, `ggf.`,
-  `usw.`, …) and ordinal numbers (`3.`) don't end a sentence. Word itself was not observed for
+  `usw.`, …) and ordinal numbers (`3.`) don't end a sentence; a German one deleted from the
+  exceptions (`deleteException`) ends one again. A full stop inside closing quotes ends a
+  sentence in German and Swiss text too (`„Hallo.“ Danach`, `«Hallo.» Danach`). A language
+  set at the caret applies to the next quote, and `de-Latn-CH` counts as Swiss. Word itself was not observed for
   this; the quotes are the Duden's and the Swiss conventions
   (`smart_quotes_follow_the_texts_language`, `german_abbreviations_and_ordinals_dont_end_sentences`).
 - Correct TWo INitial CApitals: a finished word of three or more letters with two capitals and
@@ -348,6 +351,7 @@ again.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-23 | trivial | German text (#735 review): a sentence ends inside “ ‘ » ›; a language set at the caret picks the next quote; deleted German exceptions are honoured; `de-Latn-CH` is Swiss |
 | 2026-10-23 | minor | German text: smart quotes „…“ and ‚…‘ (Swiss «…» and ‹…›), apostrophe ’ after a letter; German abbreviations and ordinal numbers don't end a sentence (#735) |
 | 2026-10-22 | trivial | Input methods: while composing, the caret and the candidate window follow the input method's cursor inside the marked text |
 | 2026-10-21 | trivial | Bullets and Numbering toggle off style-inherited lists at their effective level, including basedOn chains and numbered ListParagraph styles; other paragraphs and list definitions stay unchanged (related to #3459) |
