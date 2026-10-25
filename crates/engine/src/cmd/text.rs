@@ -103,6 +103,33 @@ fn autoformat(s: &mut Session, text: &str) -> Option<String> {
     }
 }
 
+/// A German closing ‘ (Swiss ›) typed right after a letter was only provisional: a letter typed
+/// after it makes it the apostrophe ’, so ‚Wie geht's?‘ gives ‚Wie geht’s?‘ and the next ' closes
+/// the ‚ that is still open. The two marks are the same length, so the caret stays put.
+fn provisional_apostrophe(s: &mut Session, text: &str) -> Result<(), CmdError> {
+    let mut chars = text.chars();
+    let (Some(c), None) = (chars.next(), chars.next()) else { return Ok(()) };
+    if !c.is_alphanumeric() || !s.sel.is_collapsed() || !s.prefs.autocorrect.enabled || !s.prefs.autocorrect.smart_quotes {
+        return Ok(());
+    }
+    let f = s.sel.focus.clone();
+    let Some(before) = s.doc.para_at(&f).and_then(|p| p.text.get(..f.off)) else { return Ok(()) };
+    let mut prev = before.chars().rev();
+    let (Some(q), Some(letter)) = (prev.next(), prev.next()) else { return Ok(()) };
+    let at = f.off - q.len_utf8();
+    let lang = super::tools::text_lang(s, &f, at);
+    let (_, single) = quote_pairs(lang.as_deref());
+    // In English the closing quote already is the apostrophe.
+    if !letter.is_alphanumeric() || !single.1.starts_with(q) || single.1 == "\u{2019}" {
+        return Ok(());
+    }
+    let p = s.doc.para_mut(f.story, &f.path)?;
+    let props = p.props_of_char(at).clone();
+    p.delete(at, f.off)?;
+    p.insert_text(at, "\u{2019}", &props)?;
+    Ok(())
+}
+
 /// File › Options › Advanced before typed text goes in: with "Typing replaces selected text"
 /// off the text goes in front of the selection and leaves it; in overtype the text replaces as
 /// many characters after the caret as it has, up to the paragraph's end or an object (picture,
@@ -131,6 +158,10 @@ fn typing_options(s: &mut Session, text: &str) {
 fn insert(s: &mut Session, v: &Value) -> CmdResult {
     let text = p::req_str(v, "text")?;
     let raw = p::bool(v, "raw").unwrap_or(false);
+    // Before typing_options: in overtype it selects the characters after the caret.
+    if !raw {
+        provisional_apostrophe(s, text)?;
+    }
     typing_options(s, text);
     let t = if raw { None } else { autoformat(s, text) };
     let was_collapsed = s.sel.is_collapsed();

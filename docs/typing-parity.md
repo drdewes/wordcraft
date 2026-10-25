@@ -168,7 +168,9 @@ ideographic space (`autocorrect_finds_the_word_after_a_wide_space`):
 - German text (the run's language, else its style's, the document default or the editing
   language, as for the replacement list, #735): smart quotes are „…“ and ‚…‘, in Swiss and
   Liechtenstein German «…» and ‹…›; a single quote after a letter or digit is the apostrophe ’
-  (`geht’s`) unless it closes an open ‚. German abbreviations (`z.B.`, `bzw.`, `vgl.`, `ggf.`,
+  (`geht’s`) unless it closes an open ‚; a letter typed right after such a closing ‘ (Swiss ›)
+  makes it the apostrophe, so `'Wie geht's?'` gives ‚Wie geht’s?‘. Whether a ‚ is open is decided
+  within the paragraph; a quote left open at Enter doesn't carry into the next one. German abbreviations (`z.B.`, `bzw.`, `vgl.`, `ggf.`,
   `usw.`, …) and ordinal numbers (`3.`) don't end a sentence; a German one deleted from the
   exceptions (`deleteException`) ends one again. A full stop inside closing quotes ends a
   sentence in German and Swiss text too (`„Hallo.“ Danach`, `«Hallo.» Danach`). A language
@@ -443,7 +445,7 @@ again.
 | 2026-10-25 | trivial | Highlight toggle checks the full target beyond 10,000 runs without collecting resolved formatting; mixed and inherited tails and Undo/Redo covered (#4085). |
 | 2026-10-24 | trivial | Highlight shortcut toggles the last chosen colour off when the whole selection has it; explicit colour commands remain setters (#4085). |
 | 2026-10-24 | trivial | AutoFormat As You Type: `*Bold* and _italic_ as real formatting` turns `*word*` bold and `_word_` italic without the marks; off by default |
-| 2026-10-25 | trivial | German text (#735 review): a sentence ends inside “ ‘ » ›; a language set at the caret picks the next quote; deleted German exceptions are honoured; `de-Latn-CH` is Swiss; a German sentence starting with a quote is capitalised inside it; TWo INitial CApitals works inside „…“ and «…»; empty quotes close („“, «»); an earlier English ‘…’ doesn't close a German ‚ |
+| 2026-10-25 | trivial | German text (#735 review): a sentence ends inside “ ‘ » ›; a language set at the caret picks the next quote; deleted German exceptions are honoured; `de-Latn-CH` is Swiss; a German sentence starting with a quote is capitalised inside it; TWo INitial CApitals works inside „…“ and «…»; empty quotes close („“, «»); an earlier English ‘…’ doesn't close a German ‚; an apostrophe inside ‚…‘ (‚Wie geht’s?‘) |
 | 2026-10-25 | minor | German text: smart quotes „…“ and ‚…‘ (Swiss «…» and ‹…›), apostrophe ’ after a letter; German abbreviations and ordinal numbers don't end a sentence (#735) |
 | 2026-10-22 | trivial | Input methods: while composing, the caret and the candidate window follow the input method's cursor inside the marked text |
 | 2026-10-21 | trivial | Bullets and Numbering toggle off style-inherited lists at their effective level, including basedOn chains and numbered ListParagraph styles; other paragraphs and list definitions stay unchanged (related to #3459) |

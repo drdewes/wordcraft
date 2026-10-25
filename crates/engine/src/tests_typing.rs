@@ -547,6 +547,16 @@ fn smart_quotes_follow_the_texts_language() {
     run(&mut s, "review.language", json!({"lang": "de-DE"}));
     typ(&mut s, "'hallo' ");
     assert_eq!(s.doc.plain_text(StoryRef::Body), "Say ‘bye’ ‚hallo‘ ");
+    // An apostrophe inside single quotes: the ‘ after geht becomes ’ once the s follows.
+    for (typed, want) in [("'geht's' ", "‚Geht’s‘ "), ("'Wie geht's?' ", "‚Wie geht’s?‘ "), ("\"Sie sagte 'geht's'\" ", "„Sie sagte ‚geht’s‘“ ")]
+    {
+        let mut s = in_lang("de-DE");
+        typ(&mut s, typed);
+        assert_eq!(s.doc.plain_text(StoryRef::Body), want, "{typed}");
+    }
+    let mut s = in_lang("de-CH");
+    typ(&mut s, "'Wie gäll's?' ");
+    assert_eq!(s.doc.plain_text(StoryRef::Body), "‹Wie gäll’s?› ");
     // A German interface writes German: untagged text follows the editing language.
     let mut s = self::s();
     s.editing_lang = Some("de-DE".into());
